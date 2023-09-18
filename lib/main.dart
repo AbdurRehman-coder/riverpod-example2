@@ -8,11 +8,23 @@ void main() {
 
 }
 
+extension OptionalInfixAddition<T extends num> on T?{
+  T? operator +(T? other){
+    final shadow = this;
+    if(shadow != null){
+      return shadow + (other ?? 0) as T;
+    }else{
+      return null;
+    }
+  }
+
+}
 
 void test1() {
   final int? int1 = 1;
   final int int2 = 2;
-  final result = (int1 ?? 0) + int2; // the "+" is a infix operator
+  final result = int1 + int2; // the "+" is a infix operator
+  print('result: $result');
 }
 
 
@@ -38,7 +50,7 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final date = ref.watch(currentDate);
+   test1();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hooks Riverpod',style: TextStyle(color: Colors.white, fontSize: 20),),
