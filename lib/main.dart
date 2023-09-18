@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+
+
 void main() {
   runApp(
     const ProviderScope(child: MyApp(),),
@@ -20,12 +22,14 @@ extension OptionalInfixAddition<T extends num> on T?{
 
 }
 
-void test1() {
-  final int? int1 = 1;
-  final int int2 = 2;
-  final result = int1 + int2; // the "+" is a infix operator
-  print('result: $result');
+class Counter extends StateNotifier<int?>{
+  Counter() : super(null);
+  void increment() => state = state == null ? 1 : state + 1;
+  void reset() => state = null;
+  int? get value => state;
 }
+
+final counterProvider = StateNotifierProvider<Counter, int?>((ref) => Counter());
 
 
 class MyApp extends StatelessWidget {
@@ -50,18 +54,31 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-   test1();
+    print('build...');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hooks Riverpod',style: TextStyle(color: Colors.white, fontSize: 20),),
+        title: Consumer(
+          builder: (context, ref, child){
+            final count = ref.watch(counterProvider);
+            final text = count == null ? 'Press me' : count.toString();
+            return Text(text);
+          },
+        ),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Text(date.toIso8601String(),
-          //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),),
-          // Text(date.toIso8601String()),
+          TextButton(
+            // when we have void func inside another void func we can tear-off that func
+              onPressed: ref.read(counterProvider.notifier).increment, // function tear-off
+              child: const Text('counter increment'),
+          ),
+          SizedBox(height: 20,),
+          TextButton(
+            // when we have void func inside another void func we can tear-off that func
+            onPressed: ref.read(counterProvider.notifier).reset, // function tear-off
+            child: const Text('reset increment'),
+          ),
         ],
       ),
     );
