@@ -7,7 +7,6 @@ void main() {
   runApp(
     const ProviderScope(child: MyApp(),),
   );
-
 }
 
 extension OptionalInfixAddition<T extends num> on T?{
@@ -19,12 +18,11 @@ extension OptionalInfixAddition<T extends num> on T?{
       return null;
     }
   }
-
 }
 
 class Counter extends StateNotifier<int?>{
   Counter() : super(null);
-  void increment() => state = state == null ? 1 : state + 1;
+  void increment() => state = state == null ? 1 : state+ 1;
   void reset() => state = null;
   int? get value => state;
 }
@@ -79,9 +77,41 @@ class HomePage extends ConsumerWidget {
             onPressed: ref.read(counterProvider.notifier).reset, // function tear-off
             child: const Text('reset increment'),
           ),
+          const SizedBox(height: 20,),
+          Consumer(
+            builder: (context, ref, child) {
+              final data = ref.watch(checkBoxesProvider);
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                  itemBuilder: (context, index){
+                  return  CheckboxListTile(
+                    title: Text('Checkbox 1'),
+                    value: data[index],
+                    onChanged: (bool? value) {
+                   ref.read(checkBoxesProvider.notifier).updateBoxes(index, value!);
+                    },
+                  );
+                  },
+              );
+            }
+          )
         ],
       ),
     );
   }
 }
 
+
+/// Update checkboxes through Riverpod
+
+final checkBoxesProvider = StateNotifierProvider<CheckBoxNotifier, List<bool>>((ref) => CheckBoxNotifier());
+
+class CheckBoxNotifier extends StateNotifier<List<bool>>{
+  CheckBoxNotifier() : super(List.generate(3, (index) => false));
+
+  void updateBoxes (int? index,){
+    state[index!] = !state[index];
+    state = [...state];
+  }
+}
