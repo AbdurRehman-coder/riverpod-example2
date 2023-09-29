@@ -89,7 +89,7 @@ class HomePage extends ConsumerWidget {
                     title: Text('Checkbox 1'),
                     value: data[index],
                     onChanged: (bool? value) {
-                   ref.read(checkBoxesProvider.notifier).updateBoxes(index, value!);
+                   ref.read(checkBoxesProvider.notifier).updateBoxes(index,);
                     },
                   );
                   },
